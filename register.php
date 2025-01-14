@@ -9,6 +9,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
     $confirm_password = trim($_POST['confirm_password']);
+    
+    // Pastikan CAPTCHA ada dalam POST
+    $captcha = isset($_POST['captcha']) ? trim($_POST['captcha']) : '';
 
     // Validasi input
     if (empty($username)) {
@@ -19,6 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = "Password harus terdiri dari minimal 8 karakter!";
     } elseif ($password !== $confirm_password) {
         $error = "Password tidak cocok!";
+    } elseif ($captcha !== $_SESSION["captcha_code"]) {
+        $error = "Kode CAPTCHA salah!";
     } else {
         // Cek apakah username sudah ada di database
         $query = "SELECT * FROM users WHERE username = '$username'";
@@ -59,6 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <input type="text" name="username" class="login-input" placeholder="Username" required><br>
             <input type="password" name="password" class="login-input" placeholder="Password" required><br>
             <input type="password" name="confirm_password" class="login-input" placeholder="Konfirmasi Password" required><br>
+            <img src="captcha.php" alt="CAPTCHA" /><br>
+            <input type="text" name="captcha" class="login-input" placeholder="Kode CAPTCHA" required><br>
             <input type="submit" value="Daftar" class="login-button">
         </form>
         <?php if ($error) : ?>
